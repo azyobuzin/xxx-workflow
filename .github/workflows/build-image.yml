@@ -1,0 +1,64 @@
+name: Build Image
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: Branch
+        required: true
+        default: xxx
+
+jobs:
+  build-be:
+    name: Build Backend
+    runs-on: ubuntu-20.04
+    env:
+      DOCKER_BUILDKIT: "1"
+    steps:
+      - name: git clone
+        run: git clone --depth 1 --no-tags --branch ${{ github.event.inputs.branch }} https://git.azyobuzi.net/xxx/pleroma.git
+      - name: docker build
+        run: docker build --progress=plain -t xxx-be pleroma
+      - name: docker save
+        run: docker save xxx-be | gzip > be-image.tar.gz
+      - uses: actions/upload-artifact@v2
+        with:
+          name: be
+          path: be-image.tar.gz
+          if-no-files-found: error
+
+  build-fe:
+    name: Build Frontend
+    runs-on: ubuntu-20.04
+    env:
+      NODE_ENV: production
+    steps:
+      - name: git clone
+        run: git clone --depth 1 --no-tags --branch ${{ github.event.inputs.branch }} https://git.azyobuzi.net/xxx/pleroma-fe.git
+      - name: yarn install
+        run: yarn install --pure-lockfile --production=false
+        working-directory: pleroma-fe
+      - name: yarn build
+        run: yarn build
+        working-directory: pleroma-fe
+      - uses: actions/upload-artifact@v2
+        with:
+          name: fe
+          path: pleroma-fe/dist
+          if-no-files-found: error
+
+  build-image:
+    name: Build Image
+    needs: [build-be, build-fe]
+    runs-on: ubuntu-20.04
+    env:
+      DOCKER_BUILDKIT: "1"
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+      - name: docker load
+        run: docker load -i be/be-image.tar.gz && rm -rf be
+      - name: docker build
+        run: docker build --progress=plain -t ghcr.io/azyobuzin/pleroma:${{ github.event.inputs.branch }} .
+      - name: docker push
+        run: docker push ghcr.io/azyobuzin/pleroma:${{ github.event.inputs.branch }}
