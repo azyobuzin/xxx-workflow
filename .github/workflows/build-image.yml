@@ -58,6 +58,8 @@ jobs:
       - uses: actions/download-artifact@v2
       - name: docker load
         run: docker load -i be/be-image.tar.gz && rm -rf be
+      - name: docker login
+        run: echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u azyobuzin --password-stdin
       - name: docker build
         run: docker build --progress=plain -t ghcr.io/azyobuzin/pleroma:${{ github.event.inputs.branch }} .
       - name: docker push
