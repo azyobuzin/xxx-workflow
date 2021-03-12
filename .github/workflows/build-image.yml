@@ -59,8 +59,8 @@ jobs:
       - name: docker load
         run: docker load -i be/be-image.tar.gz && rm -rf be
       - name: docker login
-        run: echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u azyobuzin --password-stdin
+        run: echo ${{ secrets.DOCKER_TOKEN }} | docker login -u azyobuzin --password-stdin
       - name: docker build
-        run: docker build --progress=plain -t ghcr.io/azyobuzin/pleroma:${{ github.event.inputs.branch }} .
+        run: docker build --progress=plain -t azyobuzin/pleroma:${{ github.event.inputs.branch }} .
       - name: docker push
-        run: docker push ghcr.io/azyobuzin/pleroma:${{ github.event.inputs.branch }}
+        run: docker push azyobuzin/pleroma:${{ github.event.inputs.branch }}
