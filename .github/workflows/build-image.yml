@@ -11,7 +11,7 @@ on:
 jobs:
   build-be:
     name: Build Backend
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: git clone
         run: git clone --depth 1 --no-tags --branch ${{ github.event.inputs.branch }} https://git.azyobuzi.net/xxx/pleroma.git
@@ -25,7 +25,7 @@ jobs:
           outputs: type=docker,dest=be-image.tar
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: be
           path: be-image.tar
@@ -33,36 +33,35 @@ jobs:
 
   build-fe:
     name: Build Frontend
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     env:
       NODE_ENV: production
     steps:
       - name: git clone
         run: git clone --depth 1 --no-tags --branch ${{ github.event.inputs.branch }} https://git.azyobuzi.net/xxx/pleroma-fe.git
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: '16'
-          cache: yarn
-          cache-dependency-path: pleroma-fe/yarn.lock
+          node-version-file: pleroma-fe/.node-version
       - name: yarn install
         run: yarn install --frozen-lockfile --production=false
         working-directory: pleroma-fe
       - name: yarn build
         run: yarn build
         working-directory: pleroma-fe
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: fe
           path: pleroma-fe/dist
           if-no-files-found: error
+          include-hidden-files: 'true'
 
   build-image:
     name: Build Image
     needs: [build-be, build-fe]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
