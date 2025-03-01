@@ -1,4 +1,5 @@
 name: Build Image
+run-name: 'Build Image: ${{ github.event.inputs.branch }}'
 
 on:
   workflow_dispatch:
