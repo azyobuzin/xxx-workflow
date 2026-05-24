@@ -17,7 +17,7 @@ jobs:
       - name: git clone
         run: git clone --depth 1 --no-tags --branch ${{ github.event.inputs.branch }} https://git.azyobuzi.net/xxx/pleroma.git
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v4
       - name: docker build
         uses: docker/build-push-action@v3
         with:
