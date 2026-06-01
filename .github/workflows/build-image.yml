@@ -19,7 +19,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
       - name: docker build
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v7
         with:
           context: pleroma
           tags: xxx-be
@@ -71,7 +71,7 @@ jobs:
       - name: docker load
         run: docker load -i be/be-image.tar && rm -rf be
       - name: Build and push
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v7
         with:
           context: ${{ github.workspace }}
           push: true
