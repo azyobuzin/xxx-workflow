@@ -26,7 +26,7 @@ jobs:
           outputs: type=docker,dest=be-image.tar
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: be
           path: be-image.tar
@@ -49,7 +49,7 @@ jobs:
       - name: yarn build
         run: yarn build
         working-directory: pleroma-fe
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: fe
           path: pleroma-fe/dist
